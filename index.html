@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo dos Continentes</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f8fafc; padding: 20px; text-align: center; }
+    .container { max-width: 700px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .draggable-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; min-height: 50px; }
+    .country {
+      background: #2563eb; color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: grab; display: inline-block;
+    }
+    .targets-container { display: flex; justify-content: space-around; gap: 15px; }
+    .dropzone {
+      width: 30%; height: 120px; border: 2px dashed #94a3b8; border-radius: 10px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s;
+    }
+    .dropzone h4 { margin: 5px 0; color: #475569; }
+    .dropzone.correct { border-color: #16a34a; background-color: #dcfce7; }
+    .dropzone.wrong { border-color: #dc2626; background-color: #fee2e2; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🌎 Encaixe o País no Continente</h2>
+    <div class="draggable-container" id="countries">
+      <div class="country" draggable="true" id="br" data-continent="america">Brasil BR</div>
+      <div class="country" draggable="true" id="jp" data-continent="asia">Japão JP</div>
+      <div class="country" draggable="true" id="fr" data-continent="europa">França FR</div>
+    </div>
+
+    <div class="targets-container">
+      <div class="dropzone" data-continent="america">
+        <h4>América do Sul</h4>
+      </div>
+      <div class="dropzone" data-continent="europa">
+        <h4>Europa</h4>
+      </div>
+      <div class="dropzone" data-continent="asia">
+        <h4>Ásia</h4>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const countries = document.querySelectorAll('.country');
+    const dropzones = document.querySelectorAll('.dropzone');
+
+    countries.forEach(country => {
+      country.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', country.id);
+      });
+    });
+
+    dropzones.forEach(zone => {
+      zone.addEventListener('dragover', (e) => e.preventDefault());
+
+      zone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const countryId = e.dataTransfer.getData('text/plain');
+        const country = document.getElementById(countryId);
+
+        if (!country) return;
+
+        const targetContinent = zone.getAttribute('data-continent');
+        const countryContinent = country.getAttribute('data-continent');
+
+        if (targetContinent === countryContinent) {
+          zone.classList.remove('wrong');
+          zone.classList.add('correct');
+          zone.appendChild(country);
+        } else {
+          zone.classList.add('wrong');
+          setTimeout(() => zone.classList.remove('wrong'), 1000);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
